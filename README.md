@@ -23,7 +23,7 @@ java 游戏服务器框架，高性能，异步无锁，事件驱动。
 
 Github 给项目点个 Star 即代表获得授权许可.
 
-
+Github https://github.com/xiazm3/kynet
 
 ---
 
