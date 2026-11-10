@@ -1,0 +1,17 @@
+package cn.itsub.kynet.common.protocol;
+
+public enum MessageType {
+    REGISTER_SERVICE,
+    REGISTER_ACTION,
+    HEARTBEAT,
+    SUBSCRIBE,
+    EVENT_PUBLISH,
+    EVENT_DELIVER,
+    RPC_REQUEST,
+    RPC_RESPONSE,
+    GATEWAY_PUSH,
+    GATEWAY_KICK,
+    REGISTRY_TOPOLOGY,
+    SERVICE_DIRECTORY,
+    UNREGISTER_SERVICE
+}
