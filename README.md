@@ -80,7 +80,7 @@ Gitee https://gitee.com/loopcc/kynet
 <dependency>
     <groupId>cn.itsub</groupId>
     <artifactId>kynet</artifactId>
-    <version>2.0.2</version>
+    <version>2.0.3</version>
 </dependency>
 ```
 
