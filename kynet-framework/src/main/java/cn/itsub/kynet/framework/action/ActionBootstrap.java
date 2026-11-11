@@ -1,6 +1,7 @@
 package cn.itsub.kynet.framework.action;
 
 import cn.itsub.kynet.common.util.ActionKey;
+import cn.itsub.kynet.framework.action.annotation.ActionAnnotations;
 import cn.itsub.kynet.framework.action.annotation.ActionController;
 import cn.itsub.kynet.framework.action.annotation.ActionMethod;
 import cn.itsub.kynet.framework.client.ServiceNode;
@@ -29,14 +30,14 @@ public class ActionBootstrap {
         if (actionController == null) {
             throw new IllegalArgumentException(controllerType.getName() + " is missing @ActionController");
         }
-        int cmd = actionController.cmd();
+        int cmd = ActionAnnotations.cmd(actionController);
         for (Method method : controllerType.getDeclaredMethods()) {
             ActionMethod actionMethod = method.getAnnotation(ActionMethod.class);
             if (actionMethod == null) {
                 continue;
             }
             method.setAccessible(true);
-            int action = ActionKey.of(cmd, actionMethod.act());
+            int action = ActionKey.of(cmd, ActionAnnotations.act(actionMethod));
             Class<?> payloadType = resolvePayloadType(method);
             serviceNode.registerActionHandler(action,
                     new ActionInvocation(controller, method, action, payloadType, actionMethod.mode()));

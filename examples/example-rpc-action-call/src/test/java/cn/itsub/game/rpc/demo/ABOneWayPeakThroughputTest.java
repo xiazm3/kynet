@@ -468,15 +468,15 @@ class ABOneWayPeakThroughputTest {
         }
     }
 
-    @ActionController(cmd = CMD)
+    @ActionController(CMD)
     private static final class NoOpReceiverAction {
-        @ActionMethod(act = ACT)
+        @ActionMethod(ACT)
         public void onMessage(ActionContext context) {
             // FAST 模式下 one-way 帧由 fast handler 处理；这里只服务注册和 RPC 就绪探测。
         }
     }
 
-    @ActionController(cmd = CMD)
+    @ActionController(CMD)
     private static final class InlineCountingReceiverAction {
         private final ReceiverCounters counters;
 
@@ -484,13 +484,13 @@ class ABOneWayPeakThroughputTest {
             this.counters = counters;
         }
 
-        @ActionMethod(act = ACT, mode = ActionExecutionMode.INLINE)
+        @ActionMethod(value = ACT, mode = ActionExecutionMode.INLINE)
         public void onMessage(ActionContext context) {
             counters.record(-1);
         }
     }
 
-    @ActionController(cmd = CMD)
+    @ActionController(CMD)
     private static final class AsyncCountingReceiverAction {
         private final ReceiverCounters counters;
 
@@ -498,7 +498,7 @@ class ABOneWayPeakThroughputTest {
             this.counters = counters;
         }
 
-        @ActionMethod(act = ACT)
+        @ActionMethod(ACT)
         public void onMessage(ActionContext context) {
             counters.record(-1);
         }

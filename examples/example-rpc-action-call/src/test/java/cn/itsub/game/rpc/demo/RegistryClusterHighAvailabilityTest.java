@@ -282,7 +282,7 @@ class RegistryClusterHighAvailabilityTest {
         System.setProperty(name, previousValue);
     }
 
-    @ActionController(cmd = CMD)
+    @ActionController(CMD)
     private static final class ClusterEchoAction {
         private final AtomicInteger executions = new AtomicInteger();
         private final AtomicBoolean blockNext = new AtomicBoolean();
@@ -295,7 +295,7 @@ class RegistryClusterHighAvailabilityTest {
             blockNext.set(true);
         }
 
-        @ActionMethod(act = ACT)
+        @ActionMethod(ACT)
         public ActionResult echo(ActionContext context) throws InterruptedException {
             executions.incrementAndGet();
             if (blockNext.compareAndSet(true, false)) {
@@ -305,7 +305,7 @@ class RegistryClusterHighAvailabilityTest {
             return ActionResult.success("cluster-ok");
         }
 
-        @ActionMethod(act = LARGE_ACT)
+        @ActionMethod(LARGE_ACT)
         public byte[] echoLarge(byte[] payload, ActionContext context) {
             return payload;
         }

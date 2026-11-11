@@ -9,12 +9,12 @@ import cn.itsub.kynet.framework.action.annotation.ActionMethod;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ActionController(cmd = 10)
+@ActionController(10)
 public class RpcDemoAction {
 
     private RpcDemoResponse RESP_SUCCESS = new RpcDemoResponse("SUCCESS", "HELLO");
 
-    @ActionMethod(act = 1,mode = ActionExecutionMode.ASYNC)
+    @ActionMethod(value = 1, mode = ActionExecutionMode.ASYNC)
     public int success(RpcDemoRequest request, ActionContext context) {
         if (log.isDebugEnabled()) {
             log.debug("act=1 success call, requestId={}, sessionId={}, traceId={}",

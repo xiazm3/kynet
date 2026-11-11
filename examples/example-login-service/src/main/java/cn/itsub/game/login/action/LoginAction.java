@@ -13,10 +13,10 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-@ActionController(cmd = 1)
+@ActionController(1)
 public class LoginAction {
 
-    @ActionMethod(act = 1)
+    @ActionMethod(1)
     public ActionResult login(LoginMessage loginMessage, ActionContext context) {
         log.info("login request {}", loginMessage);
         String username = loginMessage == null ? null : loginMessage.getUsername();
@@ -66,7 +66,7 @@ public class LoginAction {
         return ActionResult.success(loginMessage);
     }
 
-    @ActionMethod(act = 2)
+    @ActionMethod(2)
     public ActionResult hello(ActionContext context) {
         StpUtil.checkLogin();
         LoginAttachment attachment = context.getAttachment(LoginAttachment.class);
@@ -89,7 +89,7 @@ public class LoginAction {
         return ActionResult.success(text);
     }
 
-    @ActionMethod(act = 4)
+    @ActionMethod(4)
     public ActionResult logout(ActionContext context) {
         StpUtil.checkLogin();
         Long loginId = StpUtil.getLoginIdAsLong();
@@ -102,7 +102,7 @@ public class LoginAction {
     }
 
 
-    @ActionMethod(act = 3)
+    @ActionMethod(3)
     public ActionResult hello3(LoginMessage loginMessage, ActionContext context) {
         LoginAttachment attachment = context.getAttachment(LoginAttachment.class);
         log.info("hello3 username={}", attachment != null ? attachment.getUsername() : "null");
@@ -113,7 +113,7 @@ public class LoginAction {
         return ActionResult.success("云生结海楼", context.getAttachmentData());
     }
 
-    @ActionMethod(act = 5)
+    @ActionMethod(5)
     public ActionResult testBroadcast(ActionContext context) {
         LoginMessage loginMessage = new LoginMessage();
         loginMessage.setToken("hello");

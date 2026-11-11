@@ -305,17 +305,17 @@ class DirectOneWayIoThroughputTest {
         }
     }
 
-    @ActionController(cmd = CMD)
+    @ActionController(CMD)
     private static final class AsyncCountingOneWayAction extends CountingActionBase {
-        @ActionMethod(act = ACT)
+        @ActionMethod(ACT)
         public void receive(ActionContext context) {
             recordReceived();
         }
     }
 
-    @ActionController(cmd = CMD)
+    @ActionController(CMD)
     private static final class InlineCountingOneWayAction extends CountingActionBase {
-        @ActionMethod(act = ACT, mode = ActionExecutionMode.INLINE)
+        @ActionMethod(value = ACT, mode = ActionExecutionMode.INLINE)
         public void receive(ActionContext context) {
             recordReceived();
         }

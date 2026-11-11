@@ -1,17 +1,17 @@
 # kynet 框架说明
 
-java 游戏服务器框架，高性能，异步无锁，事件驱动。
+java 游戏服务器框架，高性能，异步无锁，事件驱动，纳秒级响应。
 
-框架支持客户端接入、路由、传输、防护、鉴权、分布式治理、负载均衡等能力。
+框架支持客户端接入、路由、传输、防护、鉴权、分布式负载均衡等能力。
 
-技术栈：Java 25 · Netty · Aeron · jprotobuf。
+技术栈：Java 25 · Netty · protobuf。
 
-| 模块 | 职责 |
-| --- | --- |
-| `kynet-common` | 帧编解码、Protobuf 载荷、零拷贝传输层 |
-| `kynet-registry` | 集群化注册中心：实例/Action 目录、心跳、故障摘除 |
+| 模块 | 职责                                |
+| --- |-----------------------------------|
+| `kynet-common` | 帧编解码、Protobuf 载荷、零拷贝传输层           |
+| `kynet-registry` | 集群注册中心：实例维护、心跳、故障摘除               |
 | `kynet-framework` | ServiceNode、Action 模型、多协议网关、推送与踢人 |
-| `examples` | 登录服务、网关接入、RPC 压测三个可运行示例 |
+| `examples` | 登录服务、网关接入、RPC 压测、可运行示例            |
 
 ## 架构总览：
 
@@ -21,9 +21,11 @@ java 游戏服务器框架，高性能，异步无锁，事件驱动。
 
 ## 获取授权
 
-Github 给项目点个 Star 即代表获得授权许可.
+给项目点个 Star 即代表获得授权许可.
 
 Github https://github.com/xiazm3/kynet
+
+Gitee https://gitee.com/loopcc/kynet
 
 ---
 

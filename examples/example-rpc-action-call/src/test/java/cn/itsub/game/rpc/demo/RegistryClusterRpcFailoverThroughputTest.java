@@ -424,9 +424,9 @@ class RegistryClusterRpcFailoverThroughputTest {
         System.setProperty(name, previousValue);
     }
 
-    @ActionController(cmd = CMD)
+    @ActionController(CMD)
     private static final class InlineRpcAction {
-        @ActionMethod(act = ACT, mode = ActionExecutionMode.INLINE)
+        @ActionMethod(value = ACT, mode = ActionExecutionMode.INLINE)
         public ActionResult invoke(ActionContext context) {
             return ActionResult.success(null);
         }

@@ -269,9 +269,9 @@ class DirectActionMaxQpsTest {
         }
     }
 
-    @ActionController(cmd = ONE_WAY_CMD)
+    @ActionController(ONE_WAY_CMD)
     private static final class MaxOneWayAction {
-        @ActionMethod(act = ONE_WAY_ACT, mode = ActionExecutionMode.INLINE)
+        @ActionMethod(value = ONE_WAY_ACT, mode = ActionExecutionMode.INLINE)
         public void oneWay(ActionContext context) {
         }
     }
@@ -475,11 +475,11 @@ class DirectActionMaxQpsTest {
         return value >= 0 ? value : defaultValue;
     }
 
-    @ActionController(cmd = CMD)
+    @ActionController(CMD)
     private static final class MaxQpsAction {
         private final AtomicLong received = new AtomicLong();
 
-        @ActionMethod(act = ACT, mode = ActionExecutionMode.INLINE)
+        @ActionMethod(value = ACT, mode = ActionExecutionMode.INLINE)
         public int ping(ActionContext context) {
             received.incrementAndGet();
             return 0;

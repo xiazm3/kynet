@@ -250,14 +250,14 @@ class ServiceNodeDirectQpsTest {
         System.setProperty(name, previousValue);
     }
 
-    @ActionController(cmd = CMD)
+    @ActionController(CMD)
     private static final class ForwardCountingAction {
         private final AtomicLong totalReceived = new AtomicLong();
         private final AtomicLong measuredReceived = new AtomicLong();
         private final AtomicLong measurementStartNanos = new AtomicLong();
         private final AtomicLong measurementEndNanos = new AtomicLong();
 
-        @ActionMethod(act = ACT, mode = ActionExecutionMode.INLINE)
+        @ActionMethod(value = ACT, mode = ActionExecutionMode.INLINE)
         public void receive(ActionContext context) {
             recordReceived();
         }

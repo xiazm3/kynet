@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
-@ActionController(cmd = 102)
+@ActionController(102)
 public class OneWayBenchmarkAction {
     private static final Duration MEASURE_WINDOW = Duration.ofSeconds(3);
 
@@ -21,7 +21,7 @@ public class OneWayBenchmarkAction {
     private static final AtomicLong measureEndNanos = new AtomicLong();
     private static final AtomicBoolean reported = new AtomicBoolean();
 
-    @ActionMethod(act = 1)
+    @ActionMethod(1)
     public void receive(RpcDemoRequest request, ActionContext context) {
         totalReceived.incrementAndGet();
 

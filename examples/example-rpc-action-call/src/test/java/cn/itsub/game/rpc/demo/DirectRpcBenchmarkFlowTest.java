@@ -458,7 +458,7 @@ class DirectRpcBenchmarkFlowTest {
         }
     }
 
-    @ActionController(cmd = CMD)
+    @ActionController(CMD)
     public static final class BenchmarkBAction {
         private final BenchmarkState state;
 
@@ -466,13 +466,13 @@ class DirectRpcBenchmarkFlowTest {
             this.state = state;
         }
 
-        @ActionMethod(act = INLINE_ACT, mode = ActionExecutionMode.INLINE)
+        @ActionMethod(value = INLINE_ACT, mode = ActionExecutionMode.INLINE)
         public byte[] inlineEcho(byte[] payload, ActionContext context) {
             state.incrementHandledByB();
             return payload;
         }
 
-        @ActionMethod(act = ASYNC_ACT, mode = ActionExecutionMode.ASYNC)
+        @ActionMethod(value = ASYNC_ACT, mode = ActionExecutionMode.ASYNC)
         public byte[] asyncEcho(byte[] payload, ActionContext context) {
             state.incrementHandledByB();
             return payload;

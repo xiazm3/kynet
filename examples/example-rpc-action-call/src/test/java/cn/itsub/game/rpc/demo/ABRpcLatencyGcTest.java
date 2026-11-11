@@ -320,9 +320,9 @@ class ABRpcLatencyGcTest {
         return result;
     }
 
-    @ActionController(cmd = CMD)
+    @ActionController(CMD)
     private static final class LatencyPingAction {
-        @ActionMethod(act = ACT, mode = ActionExecutionMode.INLINE)
+        @ActionMethod(value = ACT, mode = ActionExecutionMode.INLINE)
         public byte[] ping(ActionContext context) {
             return null;
         }

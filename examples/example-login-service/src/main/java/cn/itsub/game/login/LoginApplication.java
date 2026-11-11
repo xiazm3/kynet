@@ -18,6 +18,7 @@ public class LoginApplication {
 
         ActionBootstrap bootstrap = new ActionBootstrap(client);
         bootstrap.registerAction(new LoginAction());
+        bootstrap.registerAction(new cn.itsub.game.login.action.SignAction());
 
         log.info("login service started, serviceId={}, instanceId={}", client.getServiceId(), client.getInstanceId());
         new CountDownLatch(1).await();

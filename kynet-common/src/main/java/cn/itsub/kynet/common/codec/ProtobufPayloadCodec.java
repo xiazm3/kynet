@@ -11,6 +11,7 @@ import org.agrona.concurrent.UnsafeBuffer;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,6 +30,9 @@ public final class ProtobufPayloadCodec {
         }
         if (value instanceof String text) {
             return text.getBytes(StandardCharsets.UTF_8);
+        }
+        if (value instanceof List<?> list) {
+            return encode(ListValues.of(list));
         }
         if (value instanceof Integer number) {
             return encode(new PrimitiveValue().setIntValue(number).setValueKind(PrimitiveValue.Kind.INT));
