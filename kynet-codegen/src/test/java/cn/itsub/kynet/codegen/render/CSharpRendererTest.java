@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CSharpRendererTest {
@@ -14,15 +15,19 @@ class CSharpRendererTest {
         Path out = RendererTestBase.renderToTemp(new CSharpRenderer(), "csharp");
         String proxy = RendererTestBase.readAll(out, "FixtureMyActionProxy.g.cs");
         assertTrue(proxy.contains(
-                "public static async Task<ActionResponse<FixtureUserMessage>> OfAwaitLoginVerify("
+                "public static async Task<ActionResponse<FixtureUserMessage>> LoginVerifyAsync("
                         + "FixtureLoginVerifyMessage fixtureLoginVerifyMessage, NetClient? client = null)"), () -> proxy);
         assertTrue(proxy.contains(
-                "public static async void OfLoginVerify(FixtureLoginVerifyMessage fixtureLoginVerifyMessage, "
+                "public static async void LoginVerify(FixtureLoginVerifyMessage fixtureLoginVerifyMessage, "
                         + "Action<ActionResponse<FixtureUserMessage>> callback, NetClient? client = null)"), () -> proxy);
+        assertTrue(proxy.contains("callback(await LoginVerifyAsync(fixtureLoginVerifyMessage, client));"), () -> proxy);
+        assertFalse(proxy.contains("OfAwait"), () -> proxy);
+        assertFalse(proxy.contains("OfLoginVerify"), () -> proxy);
         assertTrue(proxy.contains("net.RequestAsync<int>(9, 2, @int)"), () -> proxy);
         assertTrue(proxy.contains("net.RequestAsync<KynetListValue>(9, 3, @string)"), () -> proxy);
         assertTrue(proxy.contains("KynetListValueDecoder.ToStringList(envelope.EnsureSuccess())"), () -> proxy);
-        assertTrue(proxy.contains("Task<ActionResponse<object?>> OfAwaitFireAndForget"), () -> proxy);
+        assertTrue(proxy.contains("Task<ActionResponse<object?>> FireAndForgetAsync"), () -> proxy);
+        assertTrue(proxy.contains("callback(await ContextOnlyAsync(client));"), () -> proxy);
         assertTrue(proxy.contains("net.RequestAsync<object?>(9, 5, fixtureLoginVerifyMessage)"), () -> proxy);
         assertTrue(proxy.contains("RequestAsync<FixtureUserMessage>(9, 6)"), () -> proxy);
     }

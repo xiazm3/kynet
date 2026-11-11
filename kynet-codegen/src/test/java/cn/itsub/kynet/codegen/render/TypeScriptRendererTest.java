@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TypeScriptRendererTest {
@@ -23,12 +24,17 @@ class TypeScriptRendererTest {
     }
 
     @Test
-    void controllerHasCallbackAndPromiseStyles() throws IOException {
+    void controllerUsesBusinessNamesAndReturnsPromises() throws IOException {
         Path out = RendererTestBase.renderToTemp(new TypeScriptRenderer(), "ts");
         String controller = RendererTestBase.readAll(out, "fixture-my-action.ts");
         assertTrue(controller.contains("import { ActionResponse, KynetClient } from \"../client.js\";"), () -> controller);
-        assertTrue(controller.contains("async ofAwaitLoginVerify(client: KynetClient, fixtureLoginVerifyMessageArg: FixtureLoginVerifyMessage, "
+        assertTrue(controller.contains("async loginVerify(client: KynetClient, fixtureLoginVerifyMessageArg: FixtureLoginVerifyMessage, "
                 + "options?: RequestOptions): Promise<TypedResponse<FixtureUserMessage>>"), () -> controller);
+        assertTrue(controller.contains("async contextOnly(client: KynetClient, options?: RequestOptions): Promise<TypedResponse<FixtureUserMessage>>"),
+                () -> controller);
+        assertFalse(controller.contains("ofAwait"), () -> controller);
+        assertFalse(controller.contains("ofLoginVerify"), () -> controller);
+        assertFalse(controller.contains("callback:"), () -> controller);
         assertTrue(controller.contains("await client.request(9, 1, fixtureLoginVerifyMessage.encode(fixtureLoginVerifyMessageArg), options);"),
                 () -> controller);
         assertTrue(controller.contains("await client.request(9, 2, encodeInt32Payload(int), options);"), () -> controller);

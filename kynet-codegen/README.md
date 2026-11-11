@@ -52,9 +52,27 @@ java -jar kynet-codegen-2.0.3.jar gen  --ir actions.json --lang csharp --out <�
 | 语言 | 文件 | 说明 |
 |---|---|---|
 | proto | `kynet-actions.proto` | 字段号与 order 一致；非标准载荷（裸字符串 / PrimitiveValue / List 信封）用具名消息 + wire 注释如实标注 |
-| C# | `KynetMessages.g.cs`、`<Xxx>Proxy.g.cs`、`KynetGeneratedRuntime.g.cs` | protobuf-net `[ProtoContract]` POCO + 静态代理（`OfXxx` 回调 / `OfAwaitXxx` await 双风格）；`KynetGeneratedRuntime.DefaultClient` 设默认 `NetClient`，也可逐调用传入 |
-| TS | `kynet-messages.ts`、`<xxx-action>.ts` | protobufjs minimal 风格编解码 + `TypedResponse<T>`（`data` / `ensureSuccess()` / `log()`） |
-| GDScript | `kynet_messages.gd`、`<xxx_action>.gd` | 复用 `addons/kynet/protobuf.gd` 原语，消息用 Dictionary（键 = Java 字段名） |
+| C# | `KynetMessages.g.cs`、`<Xxx>Proxy.g.cs`、`KynetGeneratedRuntime.g.cs` | protobuf-net `[ProtoContract]` POCO + 静态代理（`Xxx` 回调 / `XxxAsync` await 双风格）；`KynetGeneratedRuntime.DefaultClient` 设默认 `NetClient`，也可逐调用传入 |
+| TS | `kynet-messages.ts`、`<xxx-action>.ts` | protobufjs minimal 风格编解码 + `TypedResponse<T>`（`data` / `ensureSuccess()` / `log()`）；业务方法使用 camelCase，返回 Promise，支持 `await` / `.then()` |
+| GDScript | `kynet_messages.gd`、`<xxx_action>.gd` | 复用 `addons/kynet/protobuf.gd` 原语，消息用 Dictionary（键 = Java 字段名）；业务方法使用 snake_case，仅生成 `xxx` await 入口 |
+
+例如服务端 `SignAction.sign(token)` 对应：
+
+```csharp
+var response = await SignActionProxy.SignAsync(token);
+SignActionProxy.Sign(token, response => response.Log());
+```
+
+```typescript
+const response = await SignAction.sign(client, token);
+SignAction.sign(client, token).then(response => response.log()).catch(console.error);
+```
+
+```gdscript
+var response = await SignAction.sign(client, token)
+```
+
+上述命名替代旧的 `OfXxx` / `OfAwaitXxx`、`ofXxx` / `ofAwaitXxx`、`of_xxx` / `of_await_xxx`，重新生成后调用方需同步迁移。服务端业务方法名及 cmd/act 路由不变。
 
 生成代码为强类型：服务端改参数/返回类型并重新生成后，客户端调用点会在**编译期**报错；`GetValue<T>()`（C# 别名）与 `log()` 兼容 ioGame 式调用习惯。
 
@@ -72,6 +90,6 @@ java -jar kynet-codegen-2.0.3.jar gen  --ir actions.json --lang csharp --out <�
 
 `clients/kynet-client-mono/tests/interop/CodegenInteropServer.java`（单 JVM 起 registry/gateway/LoginAction/SignAction）+ `CodegenSmoke`（C#）与 `clients/kynet-client-typescript/tests/interop/verify-codegen.mjs`（TS）用生成代理对真实服务器完成消息 / PrimitiveValue / ListValue 三种载荷往返断言。
 
-GDScript 生成物与 addon 手写约定逐行对齐，但仓库无 Godot 二进制，未做运行时验证；接入 Godot 后建议跑一次真实调用。
+GDScript 使用 `clients/kynet-client-gdscript/tests/interop/verify_codegen.gd` 对同一服务端验证 await 调用的消息 / PrimitiveValue / ListValue 返回。命令行运行前先执行 `godot --headless --editor --path clients/kynet-client-gdscript --import --quit` 注册生成类，再执行 `godot --headless --path clients/kynet-client-gdscript --script res://tests/interop/verify_codegen.gd -- tcp://127.0.0.1:<网关端口>`。
 
 > 提示：改动框架注解等被 shade 进 fat jar 的类后，重新打包请用 `clean package`——增量 shade 会残留旧类条目导致运行时加载到旧版本。

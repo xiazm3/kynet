@@ -243,8 +243,8 @@ public final class CSharpRenderer implements Renderer {
 
     private String proxyMethods(ActionMeta action) {
         String rpc = Names.pascal(action.methodName());
-        String of = "Of" + rpc;
-        String ofAwait = "OfAwait" + rpc;
+        String callbackMethod = rpc;
+        String asyncMethod = rpc + "Async";
         String paramName = action.paramName() == null ? "" : csharpIdentifier(action.paramName());
         String csParam = action.paramType() == null ? "" : csharpType(action.paramType().kind(),
                 action.paramType().message(), action.paramType().enumName()) + " " + paramName;
@@ -256,7 +256,7 @@ public final class CSharpRenderer implements Renderer {
         StringBuilder out = new StringBuilder();
         out.append("        /// <summary>cmd=").append(action.cmd()).append(" act=").append(action.act())
                 .append(action.needsContext() ? "（服务端使用 ActionContext）" : "").append("</summary>\n");
-        out.append("        public static async Task<").append(responseType).append("> ").append(ofAwait)
+        out.append("        public static async Task<").append(responseType).append("> ").append(asyncMethod)
                 .append('(').append(csParam).append(csParam.isEmpty() ? "" : ", ")
                 .append("NetClient? client = null)\n        {\n")
                 .append("            var net = KynetGeneratedRuntime.Resolve(client);\n");
@@ -278,14 +278,14 @@ public final class CSharpRenderer implements Renderer {
         out.append("        }\n\n");
 
         // 回调版本
-        out.append("        /// <summary>回调风格：").append(of).append("(参数, result => ...)。</summary>\n")
-                .append("        public static async void ").append(of).append('(')
+        out.append("        /// <summary>回调风格：").append(callbackMethod).append("(参数, result => ...)。</summary>\n")
+                .append("        public static async void ").append(callbackMethod).append('(')
                 .append(csParam).append(csParam.isEmpty() ? "" : ", ")
                 .append("Action<").append(responseType).append("> callback, NetClient? client = null)\n")
                 .append("        {\n")
                 .append("            try\n")
                 .append("            {\n")
-                .append("                callback(await ").append(ofAwait).append('(')
+                .append("                callback(await ").append(asyncMethod).append('(')
                 .append(paramName.isEmpty() ? "client" : paramName + ", client")
                 .append("));\n")
                 .append("            }\n")

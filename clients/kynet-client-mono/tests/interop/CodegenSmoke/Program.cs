@@ -19,22 +19,22 @@ internal static class Program
         KynetGeneratedRuntime.DefaultClient = client;
         await client.ConnectAsync();
 
-        var signResponse = await SignActionProxy.OfAwaitSign(new SignTokenMessage { Ticket = "abc" });
+        var signResponse = await SignActionProxy.SignAsync(new SignTokenMessage { Ticket = "abc" });
         signResponse.Log();
         var sign = signResponse.EnsureSuccess();
         Check(sign.Day == 3, "sign day");
         Check(sign.Bonus == "签到成功：abc", "sign bonus");
         Check(signResponse.GetValue<SignResultMessage>().Day == 3, "GetValue alias");
 
-        int next = (await SignActionProxy.OfAwaitNextDay(2)).EnsureSuccess();
+        int next = (await SignActionProxy.NextDayAsync(2)).EnsureSuccess();
         Check(next == 3, "nextDay day+1");
 
-        var rewards = (await SignActionProxy.OfAwaitRewards("kynet")).EnsureSuccess();
+        var rewards = (await SignActionProxy.RewardsAsync("kynet")).EnsureSuccess();
         Check(rewards.Count == 2 && rewards[0] == "kynet-首签礼包" && rewards[1] == "连续签到+500金币",
             "rewards values");
 
         var callbackDone = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        SignActionProxy.OfNextDay(9, result =>
+        SignActionProxy.NextDay(9, result =>
         {
             callbackDone.TrySetResult(result.EnsureSuccess() == 10);
         });

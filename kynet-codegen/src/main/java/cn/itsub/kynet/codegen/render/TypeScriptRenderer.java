@@ -407,7 +407,7 @@ public final class TypeScriptRenderer implements Renderer {
 
         out.append("export const ").append(controller).append(" = {\n");
         for (ActionMeta action : actions) {
-            out.append(actionEntry(action, controller, valueImports));
+            out.append(actionEntry(action, valueImports));
         }
         out.append("};\n");
         return out.toString();
@@ -476,9 +476,8 @@ public final class TypeScriptRenderer implements Renderer {
         }
     }
 
-    private String actionEntry(ActionMeta action, String controller, Set<String> imports) {
-        String of = "of" + Names.pascal(action.methodName());
-        String ofAwait = "ofAwait" + Names.pascal(action.methodName());
+    private String actionEntry(ActionMeta action, Set<String> imports) {
+        String method = Names.camel(action.methodName());
         String paramName = action.paramName() == null ? "" : Names.camel(action.paramName());
         // 参数名与消息编解码器（import 名）同名会遮蔽编解码器，加 Arg 后缀
         if (!paramName.isEmpty() && imports.contains(paramName)) {
@@ -489,15 +488,9 @@ public final class TypeScriptRenderer implements Renderer {
         String encodeCall = encodePayload(action.paramType(), paramName);
         String decodeCall = decodePayload(action.returnType());
         String withParam = paramName.isEmpty() ? "" : ", " + paramName + ": " + tsParamType;
-        String passParam = paramName.isEmpty() ? "" : ", " + paramName;
 
         return "  /** cmd=" + action.cmd() + " act=" + action.act() + " */\n"
-                + "  " + of + "(client: KynetClient" + withParam
-                + ", callback: (response: TypedResponse<" + tsReturn + ">) => void, options?: RequestOptions): void {\n"
-                + "    void " + controller + "." + ofAwait + "(client" + passParam
-                + ", options).then(callback).catch((error: Error) => console.error(\"[Kynet]\", error.message));\n"
-                + "  },\n"
-                + "  async " + ofAwait + "(client: KynetClient" + withParam
+                + "  async " + method + "(client: KynetClient" + withParam
                 + ", options?: RequestOptions): Promise<TypedResponse<" + tsReturn + ">> {\n"
                 + "    const response = await client.request(" + action.cmd() + ", " + action.act()
                 + ", " + encodeCall + ", options);\n"

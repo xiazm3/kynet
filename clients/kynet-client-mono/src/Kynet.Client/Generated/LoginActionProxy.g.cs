@@ -11,18 +11,18 @@ namespace Kynet.Client.Generated
     public static class LoginActionProxy
     {
         /// <summary>cmd=1 act=1（服务端使用 ActionContext）</summary>
-        public static async Task<ActionResponse<object?>> OfAwaitLogin(LoginMessage loginMessage, NetClient? client = null)
+        public static async Task<ActionResponse<object?>> LoginAsync(LoginMessage loginMessage, NetClient? client = null)
         {
             var net = KynetGeneratedRuntime.Resolve(client);
             return await net.RequestAsync<object?>(1, 1, loginMessage).ConfigureAwait(false);
         }
 
-        /// <summary>回调风格：OfLogin(参数, result => ...)。</summary>
-        public static async void OfLogin(LoginMessage loginMessage, Action<ActionResponse<object?>> callback, NetClient? client = null)
+        /// <summary>回调风格：Login(参数, result => ...)。</summary>
+        public static async void Login(LoginMessage loginMessage, Action<ActionResponse<object?>> callback, NetClient? client = null)
         {
             try
             {
-                callback(await OfAwaitLogin(loginMessage, client));
+                callback(await LoginAsync(loginMessage, client));
             }
             catch (Exception exception)
             {
@@ -31,18 +31,18 @@ namespace Kynet.Client.Generated
         }
 
         /// <summary>cmd=1 act=2（服务端使用 ActionContext）</summary>
-        public static async Task<ActionResponse<object?>> OfAwaitHello(NetClient? client = null)
+        public static async Task<ActionResponse<object?>> HelloAsync(NetClient? client = null)
         {
             var net = KynetGeneratedRuntime.Resolve(client);
             return await net.RequestAsync<object?>(1, 2).ConfigureAwait(false);
         }
 
-        /// <summary>回调风格：OfHello(参数, result => ...)。</summary>
-        public static async void OfHello(Action<ActionResponse<object?>> callback, NetClient? client = null)
+        /// <summary>回调风格：Hello(参数, result => ...)。</summary>
+        public static async void Hello(Action<ActionResponse<object?>> callback, NetClient? client = null)
         {
             try
             {
-                callback(await OfAwaitHello(client));
+                callback(await HelloAsync(client));
             }
             catch (Exception exception)
             {
@@ -51,18 +51,18 @@ namespace Kynet.Client.Generated
         }
 
         /// <summary>cmd=1 act=3（服务端使用 ActionContext）</summary>
-        public static async Task<ActionResponse<object?>> OfAwaitHello3(LoginMessage loginMessage, NetClient? client = null)
+        public static async Task<ActionResponse<object?>> Hello3Async(LoginMessage loginMessage, NetClient? client = null)
         {
             var net = KynetGeneratedRuntime.Resolve(client);
             return await net.RequestAsync<object?>(1, 3, loginMessage).ConfigureAwait(false);
         }
 
-        /// <summary>回调风格：OfHello3(参数, result => ...)。</summary>
-        public static async void OfHello3(LoginMessage loginMessage, Action<ActionResponse<object?>> callback, NetClient? client = null)
+        /// <summary>回调风格：Hello3(参数, result => ...)。</summary>
+        public static async void Hello3(LoginMessage loginMessage, Action<ActionResponse<object?>> callback, NetClient? client = null)
         {
             try
             {
-                callback(await OfAwaitHello3(loginMessage, client));
+                callback(await Hello3Async(loginMessage, client));
             }
             catch (Exception exception)
             {
@@ -71,18 +71,18 @@ namespace Kynet.Client.Generated
         }
 
         /// <summary>cmd=1 act=4（服务端使用 ActionContext）</summary>
-        public static async Task<ActionResponse<object?>> OfAwaitLogout(NetClient? client = null)
+        public static async Task<ActionResponse<object?>> LogoutAsync(NetClient? client = null)
         {
             var net = KynetGeneratedRuntime.Resolve(client);
             return await net.RequestAsync<object?>(1, 4).ConfigureAwait(false);
         }
 
-        /// <summary>回调风格：OfLogout(参数, result => ...)。</summary>
-        public static async void OfLogout(Action<ActionResponse<object?>> callback, NetClient? client = null)
+        /// <summary>回调风格：Logout(参数, result => ...)。</summary>
+        public static async void Logout(Action<ActionResponse<object?>> callback, NetClient? client = null)
         {
             try
             {
-                callback(await OfAwaitLogout(client));
+                callback(await LogoutAsync(client));
             }
             catch (Exception exception)
             {
@@ -91,18 +91,18 @@ namespace Kynet.Client.Generated
         }
 
         /// <summary>cmd=1 act=5（服务端使用 ActionContext）</summary>
-        public static async Task<ActionResponse<object?>> OfAwaitTestBroadcast(NetClient? client = null)
+        public static async Task<ActionResponse<object?>> TestBroadcastAsync(NetClient? client = null)
         {
             var net = KynetGeneratedRuntime.Resolve(client);
             return await net.RequestAsync<object?>(1, 5).ConfigureAwait(false);
         }
 
-        /// <summary>回调风格：OfTestBroadcast(参数, result => ...)。</summary>
-        public static async void OfTestBroadcast(Action<ActionResponse<object?>> callback, NetClient? client = null)
+        /// <summary>回调风格：TestBroadcast(参数, result => ...)。</summary>
+        public static async void TestBroadcast(Action<ActionResponse<object?>> callback, NetClient? client = null)
         {
             try
             {
-                callback(await OfAwaitTestBroadcast(client));
+                callback(await TestBroadcastAsync(client));
             }
             catch (Exception exception)
             {

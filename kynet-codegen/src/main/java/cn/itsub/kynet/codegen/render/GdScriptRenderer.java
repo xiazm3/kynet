@@ -20,7 +20,7 @@ import java.util.Set;
 
 /**
  * 生成 GDScript 消息编解码（复用 addons/kynet/protobuf.gd 原语）和每个控制器一个静态代理类。
- * 消息用 Dictionary 表达（键 = Java 字段名），await 风格 + 回调风格。
+ * 消息用 Dictionary 表达（键 = Java 字段名），action 代理仅提供 await 调用。
  */
 public final class GdScriptRenderer implements Renderer {
     private Map<String, String> messageNames = new LinkedHashMap<>();
@@ -175,11 +175,18 @@ public final class GdScriptRenderer implements Renderer {
                 		return {"ok": false}
                 	var values: Array = []
                 	if expected_kind <= 5:
+                \t\tvar expected_wire := 2 if expected_kind == 0 else (0 if expected_kind <= 3 else (1 if expected_kind == 4 else 5))
                 		for entry in fields.get(expected_kind + 2, []):
+                \t\t\tif entry.wire != expected_wire:
+                \t\t\t\treturn {"ok": false}
                 			var value: Variant = entry.value
                 			if expected_kind == 0:
+                \t\t\t\tif not PacketCodec._valid_utf8(value):
+                \t\t\t\t\treturn {"ok": false}
+                \t\t\t\tvalue = value.get_string_from_utf8()
+                \t\t\telif expected_kind == 1:
                 				value = decode_int32(int(value))
-                			elif expected_kind == 2:
+                \t\t\telif expected_kind == 3:
                 				value = value != 0
                 			values.append(value)
                 	else:
@@ -230,7 +237,7 @@ public final class GdScriptRenderer implements Renderer {
                 	return fixed
 
 
-                static func unwrap(result: Dictionary, decoder: String) -> Dictionary:
+                static func unwrap(result: Dictionary, decoder: Callable) -> Dictionary:
                 	if not result.get("ok", false):
                 		return result
                 	var session_id: int = result.get("session_id", 0)
@@ -238,7 +245,7 @@ public final class GdScriptRenderer implements Renderer {
                 	var payload: Variant = result.get("payload", null)
                 	if payload == null or (payload is PackedByteArray and payload.is_empty()):
                 		return {"ok": true, "data": null, "session_id": session_id, "user_id": user_id}
-                	var decoded: Dictionary = call(decoder, payload)
+                \tvar decoded: Dictionary = decoder.call(payload)
                 	if not decoded.get("ok", false):
                 		return {"ok": false, "error_code": "DECODE_FAILED",
                 			"error_message": "payload decode failed", "session_id": session_id, "user_id": user_id}
@@ -435,29 +442,21 @@ public final class GdScriptRenderer implements Renderer {
     }
 
     private String controllerAction(ActionMeta action) {
-        String of = "of_" + Names.snake(action.methodName());
-        String ofAwait = "of_await_" + Names.snake(action.methodName());
+        String method = Names.snake(action.methodName());
         String paramName = action.paramName() == null ? "" : gdParamName(action.paramName());
         String withParam = paramName.isEmpty() ? ""
                 : ", " + paramName + ": " + (action.paramType() == null ? "Variant" : gdParamType(action.paramType()));
-        String passParam = paramName.isEmpty() ? "" : ", " + paramName;
         String encodeCall = paramName.isEmpty() ? "null"
                 : "Messages." + payloadEncoder(action.paramType()) + "(" + paramName + ")";
         String decoder = payloadDecoder(action.returnType());
 
         return "## cmd=" + action.cmd() + " act=" + action.act()
-                + " 回调风格：" + of + "(client" + (paramName.isEmpty() ? "" : ", " + paramName)
-                + ", func(result): Messages.log_result(result))\n"
-                + "static func " + of + "(client" + withParam + ", callback: Callable) -> void:\n"
-                + "\tvar result: Dictionary = await " + ofAwait + "(client" + passParam + ")\n"
-                + "\tcallback.call(result)\n\n\n"
-                + "## cmd=" + action.cmd() + " act=" + action.act()
-                + " await 风格：var result := await " + ofAwait + "(client"
+                + " await 风格：var result := await " + method + "(client"
                 + (paramName.isEmpty() ? "" : ", " + paramName) + ")\n"
-                + "static func " + ofAwait + "(client" + withParam + ") -> Dictionary:\n"
+                + "static func " + method + "(client" + withParam + ") -> Dictionary:\n"
                 + "\tvar result: Dictionary = await client.request_async(" + action.cmd() + ", " + action.act()
                 + ", " + encodeCall + ")\n"
-                + "\treturn Messages.unwrap(result, \"" + decoder + "\")\n\n\n";
+                + "\treturn Messages.unwrap(result, Messages." + decoder + ")\n\n\n";
     }
 
     private String gdParamType(TypeRef ref) {

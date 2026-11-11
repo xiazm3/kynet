@@ -76,11 +76,18 @@ static func decode_list(data: PackedByteArray, expected_kind: int,
 		return {"ok": false}
 	var values: Array = []
 	if expected_kind <= 5:
+		var expected_wire := 2 if expected_kind == 0 else (0 if expected_kind <= 3 else (1 if expected_kind == 4 else 5))
 		for entry in fields.get(expected_kind + 2, []):
+			if entry.wire != expected_wire:
+				return {"ok": false}
 			var value: Variant = entry.value
 			if expected_kind == 0:
+				if not PacketCodec._valid_utf8(value):
+					return {"ok": false}
+				value = value.get_string_from_utf8()
+			elif expected_kind == 1:
 				value = decode_int32(int(value))
-			elif expected_kind == 2:
+			elif expected_kind == 3:
 				value = value != 0
 			values.append(value)
 	else:
@@ -131,7 +138,7 @@ static func decode_int32(value: int) -> int:
 	return fixed
 
 
-static func unwrap(result: Dictionary, decoder: String) -> Dictionary:
+static func unwrap(result: Dictionary, decoder: Callable) -> Dictionary:
 	if not result.get("ok", false):
 		return result
 	var session_id: int = result.get("session_id", 0)
@@ -139,7 +146,7 @@ static func unwrap(result: Dictionary, decoder: String) -> Dictionary:
 	var payload: Variant = result.get("payload", null)
 	if payload == null or (payload is PackedByteArray and payload.is_empty()):
 		return {"ok": true, "data": null, "session_id": session_id, "user_id": user_id}
-	var decoded: Dictionary = call(decoder, payload)
+	var decoded: Dictionary = decoder.call(payload)
 	if not decoded.get("ok", false):
 		return {"ok": false, "error_code": "DECODE_FAILED",
 			"error_message": "payload decode failed", "session_id": session_id, "user_id": user_id}

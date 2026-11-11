@@ -46,4 +46,9 @@ public class FixtureMyAction {
     public FixtureMessages.FixtureMixed mixedOrder(FixtureMessages.FixtureMixed mixed) {
         return mixed;
     }
+
+    @ActionMethod(8)
+    public int sign(int value) {
+        return value;
+    }
 }

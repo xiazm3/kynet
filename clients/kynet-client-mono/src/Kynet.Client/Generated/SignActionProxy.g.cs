@@ -11,18 +11,18 @@ namespace Kynet.Client.Generated
     public static class SignActionProxy
     {
         /// <summary>cmd=2 act=1</summary>
-        public static async Task<ActionResponse<SignResultMessage>> OfAwaitSign(SignTokenMessage signTokenMessage, NetClient? client = null)
+        public static async Task<ActionResponse<SignResultMessage>> SignAsync(SignTokenMessage signTokenMessage, NetClient? client = null)
         {
             var net = KynetGeneratedRuntime.Resolve(client);
             return await net.RequestAsync<SignResultMessage>(2, 1, signTokenMessage).ConfigureAwait(false);
         }
 
-        /// <summary>回调风格：OfSign(参数, result => ...)。</summary>
-        public static async void OfSign(SignTokenMessage signTokenMessage, Action<ActionResponse<SignResultMessage>> callback, NetClient? client = null)
+        /// <summary>回调风格：Sign(参数, result => ...)。</summary>
+        public static async void Sign(SignTokenMessage signTokenMessage, Action<ActionResponse<SignResultMessage>> callback, NetClient? client = null)
         {
             try
             {
-                callback(await OfAwaitSign(signTokenMessage, client));
+                callback(await SignAsync(signTokenMessage, client));
             }
             catch (Exception exception)
             {
@@ -31,18 +31,18 @@ namespace Kynet.Client.Generated
         }
 
         /// <summary>cmd=2 act=2</summary>
-        public static async Task<ActionResponse<int>> OfAwaitNextDay(int @int, NetClient? client = null)
+        public static async Task<ActionResponse<int>> NextDayAsync(int @int, NetClient? client = null)
         {
             var net = KynetGeneratedRuntime.Resolve(client);
             return await net.RequestAsync<int>(2, 2, @int).ConfigureAwait(false);
         }
 
-        /// <summary>回调风格：OfNextDay(参数, result => ...)。</summary>
-        public static async void OfNextDay(int @int, Action<ActionResponse<int>> callback, NetClient? client = null)
+        /// <summary>回调风格：NextDay(参数, result => ...)。</summary>
+        public static async void NextDay(int @int, Action<ActionResponse<int>> callback, NetClient? client = null)
         {
             try
             {
-                callback(await OfAwaitNextDay(@int, client));
+                callback(await NextDayAsync(@int, client));
             }
             catch (Exception exception)
             {
@@ -51,7 +51,7 @@ namespace Kynet.Client.Generated
         }
 
         /// <summary>cmd=2 act=3</summary>
-        public static async Task<ActionResponse<List<string>>> OfAwaitRewards(string @string, NetClient? client = null)
+        public static async Task<ActionResponse<List<string>>> RewardsAsync(string @string, NetClient? client = null)
         {
             var net = KynetGeneratedRuntime.Resolve(client);
             var envelope = await net.RequestAsync<KynetListValue>(2, 3, @string).ConfigureAwait(false);
@@ -59,12 +59,12 @@ namespace Kynet.Client.Generated
             return new ActionResponse<List<string>>(data, envelope.ErrorCode, envelope.ErrorMessage, envelope.SessionId, envelope.UserId);
         }
 
-        /// <summary>回调风格：OfRewards(参数, result => ...)。</summary>
-        public static async void OfRewards(string @string, Action<ActionResponse<List<string>>> callback, NetClient? client = null)
+        /// <summary>回调风格：Rewards(参数, result => ...)。</summary>
+        public static async void Rewards(string @string, Action<ActionResponse<List<string>>> callback, NetClient? client = null)
         {
             try
             {
-                callback(await OfAwaitRewards(@string, client));
+                callback(await RewardsAsync(@string, client));
             }
             catch (Exception exception)
             {

@@ -38,42 +38,27 @@ export class TypedResponse<T> {
 
 export const LoginAction = {
   /** cmd=1 act=1 */
-  ofLogin(client: KynetClient, loginMessageArg: LoginMessage, callback: (response: TypedResponse<null>) => void, options?: RequestOptions): void {
-    void LoginAction.ofAwaitLogin(client, loginMessageArg, options).then(callback).catch((error: Error) => console.error("[Kynet]", error.message));
-  },
-  async ofAwaitLogin(client: KynetClient, loginMessageArg: LoginMessage, options?: RequestOptions): Promise<TypedResponse<null>> {
+  async login(client: KynetClient, loginMessageArg: LoginMessage, options?: RequestOptions): Promise<TypedResponse<null>> {
     const response = await client.request(1, 1, loginMessage.encode(loginMessageArg), options);
     return new TypedResponse(response, () => null);
   },
   /** cmd=1 act=2 */
-  ofHello(client: KynetClient, callback: (response: TypedResponse<null>) => void, options?: RequestOptions): void {
-    void LoginAction.ofAwaitHello(client, options).then(callback).catch((error: Error) => console.error("[Kynet]", error.message));
-  },
-  async ofAwaitHello(client: KynetClient, options?: RequestOptions): Promise<TypedResponse<null>> {
+  async hello(client: KynetClient, options?: RequestOptions): Promise<TypedResponse<null>> {
     const response = await client.request(1, 2, null, options);
     return new TypedResponse(response, () => null);
   },
   /** cmd=1 act=3 */
-  ofHello3(client: KynetClient, loginMessageArg: LoginMessage, callback: (response: TypedResponse<null>) => void, options?: RequestOptions): void {
-    void LoginAction.ofAwaitHello3(client, loginMessageArg, options).then(callback).catch((error: Error) => console.error("[Kynet]", error.message));
-  },
-  async ofAwaitHello3(client: KynetClient, loginMessageArg: LoginMessage, options?: RequestOptions): Promise<TypedResponse<null>> {
+  async hello3(client: KynetClient, loginMessageArg: LoginMessage, options?: RequestOptions): Promise<TypedResponse<null>> {
     const response = await client.request(1, 3, loginMessage.encode(loginMessageArg), options);
     return new TypedResponse(response, () => null);
   },
   /** cmd=1 act=4 */
-  ofLogout(client: KynetClient, callback: (response: TypedResponse<null>) => void, options?: RequestOptions): void {
-    void LoginAction.ofAwaitLogout(client, options).then(callback).catch((error: Error) => console.error("[Kynet]", error.message));
-  },
-  async ofAwaitLogout(client: KynetClient, options?: RequestOptions): Promise<TypedResponse<null>> {
+  async logout(client: KynetClient, options?: RequestOptions): Promise<TypedResponse<null>> {
     const response = await client.request(1, 4, null, options);
     return new TypedResponse(response, () => null);
   },
   /** cmd=1 act=5 */
-  ofTestBroadcast(client: KynetClient, callback: (response: TypedResponse<null>) => void, options?: RequestOptions): void {
-    void LoginAction.ofAwaitTestBroadcast(client, options).then(callback).catch((error: Error) => console.error("[Kynet]", error.message));
-  },
-  async ofAwaitTestBroadcast(client: KynetClient, options?: RequestOptions): Promise<TypedResponse<null>> {
+  async testBroadcast(client: KynetClient, options?: RequestOptions): Promise<TypedResponse<null>> {
     const response = await client.request(1, 5, null, options);
     return new TypedResponse(response, () => null);
   },
