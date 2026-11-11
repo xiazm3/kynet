@@ -31,6 +31,43 @@ kynet-actions.proto + 消息类 + XxxProxy / XxxAction
 
 ## 用法
 
+### Java 项目内调用
+
+在服务端项目中引入 `kynet-codegen` 后，先编译 Action 类，再运行一个普通的 Java 入口。默认从运行时 classpath 扫描可见的 Action，生成 C# 到调用入口所属项目的 `generated/kynet` 目录：
+
+```java
+import cn.itsub.kynet.codegen.CodeGenHelper;
+
+public class GenerateClient {
+    public static void main(String[] args) throws Exception {
+        CodeGenHelper.generate();
+    }
+}
+```
+
+可选配置按需覆盖默认值；相对输出路径以项目根目录为基准：
+
+```java
+import cn.itsub.kynet.codegen.ClientTarget;
+import cn.itsub.kynet.codegen.CodeGenHelper;
+import java.nio.file.Path;
+
+public class GenerateClient {
+    public static void main(String[] args) throws Exception {
+        CodeGenHelper.configure()
+            .target(ClientTarget.CSHARP)
+            .outputDirectory(Path.of("../kynet-client-mono/src/Kynet.Client/Generated"))
+            .includePackages("cn.itsub.game.login.action")
+            .csharpNamespace("Game.Client.Generated")
+            .generate();
+    }
+}
+```
+
+`targets(ClientTarget.CSHARP, ClientTarget.TYPESCRIPT)` 可一次生成多个目标；还支持 `GDSCRIPT` 和 `PROTO`。默认扫描运行时可见的全部 Action，无需设置包名或 classpath；特殊布局可用 `projectRoot(...)`、`classpathEntries(...)` 覆盖自动发现。其他可选项对应 CLI 的 `protoPackage(...)`、`tsImportPrefix(...)`、`gdAddonPath(...)` 和 `gdGeneratedPath(...)`。`scan()` 返回 IR，`scanTo(...)` 保存 actions.json，`fromIr(...)` 从已有 IR 生成。Helper 返回输出文件列表，错误以异常报告，不退出 JVM。
+
+### 命令行
+
 ```bash
 mvn -pl kynet-codegen package -DskipTests   # 产出可执行 fat jar
 

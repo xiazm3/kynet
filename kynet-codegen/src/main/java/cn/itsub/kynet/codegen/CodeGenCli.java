@@ -1,22 +1,11 @@
 package cn.itsub.kynet.codegen;
 
 import cn.itsub.kynet.codegen.ir.IrModel;
-import cn.itsub.kynet.codegen.render.CSharpRenderer;
-import cn.itsub.kynet.codegen.render.GdScriptRenderer;
-import cn.itsub.kynet.codegen.render.ProtoRenderer;
 import cn.itsub.kynet.codegen.render.RenderOptions;
-import cn.itsub.kynet.codegen.render.Renderer;
-import cn.itsub.kynet.codegen.render.TypeScriptRenderer;
-import cn.itsub.kynet.codegen.scan.ClasspathScanner;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +19,6 @@ import java.util.Map;
  * </pre>
  */
 public final class CodeGenCli {
-    private static final ObjectMapper MAPPER = new ObjectMapper()
-            .enable(SerializationFeature.INDENT_OUTPUT)
-            .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-
     public static void main(String[] args) {
         try {
             run(args);
@@ -65,8 +50,7 @@ public final class CodeGenCli {
     private static void scan(Map<String, List<String>> options) throws Exception {
         String out = requireOption(options, "--out");
         IrModel model = scanModel(options);
-        Files.createDirectories(Path.of(out).getParent() == null ? Path.of(".") : Path.of(out).getParent());
-        MAPPER.writeValue(Path.of(out).toFile(), model);
+        CodeGenEngine.writeIr(model, Path.of(out));
         System.out.println("[kynet-codegen] 已写出 " + out + "（" + model.actions().size()
                 + " 个 action，" + model.messages().size() + " 个消息，" + model.enums().size() + " 个枚举）");
     }
@@ -74,7 +58,7 @@ public final class CodeGenCli {
     private static void generate(Map<String, List<String>> options) throws Exception {
         String irPath = requireOption(options, "--ir");
         String out = requireOption(options, "--out");
-        IrModel model = MAPPER.readValue(Path.of(irPath).toFile(), IrModel.class);
+        IrModel model = CodeGenEngine.readIr(Path.of(irPath));
         renderAll(model, options, Path.of(out));
     }
 
@@ -91,7 +75,7 @@ public final class CodeGenCli {
         }
         List<Path> classpath = classpathValues.stream().map(Path::of).map(Path::toAbsolutePath).toList();
         List<String> includes = options.getOrDefault("--include", List.of());
-        return new ClasspathScanner().scan(classpath, includes, Instant.now().toString());
+        return CodeGenEngine.scan(classpath, includes);
     }
 
     private static void renderAll(IrModel model, Map<String, List<String>> options, Path outDir) throws Exception {
@@ -107,24 +91,13 @@ public final class CodeGenCli {
             throw new IllegalArgumentException("缺少 --lang（proto/csharp/typescript/gdscript，可重复）");
         }
         for (String lang : langs) {
-            Renderer renderer = rendererFor(lang);
-            List<Path> files = renderer.render(model, renderOptions, outDir);
-            System.out.println("[kynet-codegen] " + lang + " -> " + outDir + "（"
-                    + files.size() + " 个文件）");
-            for (Path file : files) {
+            CodeGenEngine.RenderResult result = CodeGenEngine.render(model, renderOptions, outDir, List.of(lang)).getFirst();
+            System.out.println("[kynet-codegen] " + result.language() + " -> " + outDir + "（"
+                    + result.files().size() + " 个文件）");
+            for (Path file : result.files()) {
                 System.out.println("  " + file.getFileName());
             }
         }
-    }
-
-    private static Renderer rendererFor(String lang) {
-        return switch (lang) {
-            case "proto" -> new ProtoRenderer();
-            case "csharp" -> new CSharpRenderer();
-            case "typescript", "ts" -> new TypeScriptRenderer();
-            case "gdscript", "gd" -> new GdScriptRenderer();
-            default -> throw new IllegalArgumentException("未知语言 " + lang + "，支持 proto/csharp/typescript/gdscript");
-        };
     }
 
     private static Map<String, List<String>> parseOptions(String[] args) {
